@@ -1,0 +1,41 @@
+package transit.management.viewlayer.servlet;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import transit.management.businesslayer.VehicleController;
+import transit.management.viewlayer.response.TransitResponse;
+import javax.servlet.http.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+
+public class LoginServlet extends HttpServlet {
+
+    private final Gson gson = new Gson();
+
+    private final VehicleController controller = VehicleController.getInstance();
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        response.setContentType("application/json;charset=UTF-8");
+
+        // 读取 JSON 请求体
+        BufferedReader reader = request.getReader();
+        JsonObject jsonRequest = gson.fromJson(reader, JsonObject.class);
+        String name = jsonRequest.get("name").getAsString();
+        String password = jsonRequest.get("password").getAsString();
+        boolean valid = controller.validUserInfo(name, password);
+        // 构造响应
+        TransitResponse<String> resObj;
+        if (valid) {
+            resObj = new TransitResponse<>(true, "Success!");
+        } else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resObj = new TransitResponse<>(false, "Username or password incorrect!");
+        }
+
+        String jsonResponse = gson.toJson(resObj);
+        response.getWriter().write(jsonResponse);
+    }
+}
