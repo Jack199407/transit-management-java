@@ -20,13 +20,12 @@ public class LoginServlet extends HttpServlet {
 
         response.setContentType("application/json;charset=UTF-8");
 
-        // 读取 JSON 请求体
         BufferedReader reader = request.getReader();
         JsonObject jsonRequest = gson.fromJson(reader, JsonObject.class);
         String name = jsonRequest.get("name").getAsString();
         String password = jsonRequest.get("password").getAsString();
         boolean valid = controller.validUserInfo(name, password);
-        // 构造响应
+
         TransitResponse<String> resObj;
         if (valid) {
             resObj = new TransitResponse<>(true, "Success!");

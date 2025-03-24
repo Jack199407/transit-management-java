@@ -55,6 +55,23 @@
         <url-pattern>/add/vehicle</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ListScheduleServlet</servlet-name>
+        <servlet-class>transit.management.viewlayer.servlet.ListScheduleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ListScheduleServlet</servlet-name>
+        <url-pattern>/list/schedule</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UpdateStatusServlet</servlet-name>
+        <servlet-class>transit.management.viewlayer.servlet.UpdateStatusServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateStatusServlet</servlet-name>
+        <url-pattern>/update/status</url-pattern>
+    </servlet-mapping>
     <!-- CORS 跨域 Filter 配置 -->
     <filter>
         <filter-name>CorsFilter</filter-name>

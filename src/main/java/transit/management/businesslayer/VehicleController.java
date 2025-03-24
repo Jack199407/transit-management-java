@@ -5,14 +5,18 @@ import transit.management.businesslayer.command.Command;
 import transit.management.businesslayer.command.Dispatcher;
 import transit.management.businesslayer.command.VehicleManager;
 import transit.management.businesslayer.factory.VehicleFactory;
+import transit.management.dataacesslayer.dao.DepartureScheduleDAO;
 import transit.management.dataacesslayer.dao.UserDAO;
 import transit.management.dataacesslayer.dao.VehicleDAO;
+import transit.management.dataacesslayer.dao.impl.DepartureScheduleDAPImpl;
 import transit.management.dataacesslayer.dao.impl.UserDAOImpl;
 import transit.management.dataacesslayer.dao.impl.VehicleDAOImpl;
+import transit.management.transferobjects.DepartureSchedule;
 import transit.management.transferobjects.User;
 import transit.management.transferobjects.Vehicle;
 
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,6 +39,7 @@ public class VehicleController {
 
     private final UserDAO userDAO = new UserDAOImpl();
     private final VehicleDAO vehicleDAO = new VehicleDAOImpl();
+    private final DepartureScheduleDAO departureScheduleDAO = new DepartureScheduleDAPImpl();
 
     public boolean validUserInfo(String userName, String password) {
         User user;
@@ -98,5 +103,27 @@ public class VehicleController {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<DepartureSchedule> listSchedulesByVehicleId(Integer vehicleId) {
+        List<DepartureSchedule> list;
+
+        try {
+            list = departureScheduleDAO.listAllByVehicleId(vehicleId);
+            list.sort(Comparator.comparing(DepartureSchedule::getExpectedDepartTime));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+    public boolean updateStatus(Integer scheduleId, String newStatus) {
+        boolean success;
+        try {
+            success = departureScheduleDAO.updateStatus(scheduleId, newStatus);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return success;
     }
 }

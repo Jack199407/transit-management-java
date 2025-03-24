@@ -11,6 +11,6 @@ public class VehicleManager {
 
     public void assignRoute(Integer vehicleId, Integer routeId) throws SQLException {
         // vehicle id更新数据库中数据的routeId
-        boolean update = vehicleDAO.updateRouteIdByVehicleId(vehicleId, routeId);
+        vehicleDAO.updateRouteIdByVehicleId(vehicleId, routeId);
     }
 }
