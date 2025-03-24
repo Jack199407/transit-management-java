@@ -19,8 +19,24 @@ public class DepartureScheduleDAPImpl implements DepartureScheduleDAO {
         this.dataSource = DataSourceManager.getInstance();
     }
     @Override
-    public int insert(DepartureSchedule entity) {
-        return 0;
+    public int insert(DepartureSchedule schedule) throws SQLException {
+        String sql = "INSERT INTO departure_schedule (" +
+                "vehicle_id, route_id, expected_depart_time, expected_arrival_time, status" +
+                ") VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, schedule.getVehicleId());
+            stmt.setInt(2, schedule.getRouteId());
+
+            stmt.setTimestamp(3, new java.sql.Timestamp(schedule.getExpectedDepartTime().getTime()));
+            stmt.setTimestamp(4, new java.sql.Timestamp(schedule.getExpectedArrivalTime().getTime()));
+
+            stmt.setString(5, schedule.getStatus()); // ENUM 字段
+
+            return stmt.executeUpdate();
+        }
     }
 
     @Override

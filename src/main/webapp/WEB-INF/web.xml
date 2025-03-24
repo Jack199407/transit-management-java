@@ -72,6 +72,16 @@
         <servlet-name>UpdateStatusServlet</servlet-name>
         <url-pattern>/update/status</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AddScheduleServlet</servlet-name>
+        <servlet-class>transit.management.viewlayer.servlet.AddScheduleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddScheduleServlet</servlet-name>
+        <url-pattern>/add/schedule</url-pattern>
+    </servlet-mapping>
+
     <!-- CORS 跨域 Filter 配置 -->
     <filter>
         <filter-name>CorsFilter</filter-name>

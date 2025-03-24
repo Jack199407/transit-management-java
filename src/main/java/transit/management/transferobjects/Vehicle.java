@@ -19,6 +19,16 @@ public class Vehicle implements Subject {
     private BigDecimal maintainGapMiles;
     private BigDecimal milesFromLastMaintenance;
     private boolean needMaintenance;
+    private String currentRouteName;
+
+
+    public String getCurrentRouteName() {
+        return currentRouteName;
+    }
+
+    public void setCurrentRouteName(String currentRouteName) {
+        this.currentRouteName = currentRouteName;
+    }
 
     public void setId(Integer id) {
         this.id = id;

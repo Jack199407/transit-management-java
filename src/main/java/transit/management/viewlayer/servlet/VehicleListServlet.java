@@ -3,6 +3,7 @@ package transit.management.viewlayer.servlet;
 
 import com.google.gson.Gson;
 import transit.management.businesslayer.VehicleController;
+import transit.management.businesslayer.dto.VehiclesAndRoutesDto;
 import transit.management.transferobjects.Vehicle;
 import transit.management.viewlayer.response.TransitResponse;
 
@@ -24,9 +25,9 @@ public class VehicleListServlet extends HttpServlet {
             throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
-        List<Vehicle> list = controller.listVehicles();
-        TransitResponse<List<Vehicle>> resObj;
-        resObj = new TransitResponse<>(true, list);
+        VehiclesAndRoutesDto vehiclesAndRoutesDto = controller.listVehicles();
+        TransitResponse<VehiclesAndRoutesDto> resObj;
+        resObj = new TransitResponse<>(true, vehiclesAndRoutesDto);
 
         String jsonResponse = gson.toJson(resObj);
         response.getWriter().write(jsonResponse);
