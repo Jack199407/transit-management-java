@@ -1,5 +1,6 @@
 package transit.management.dataacesslayer.dao.impl;
 
+import transit.management.businesslayer.observer.MaintenanceService;
 import transit.management.dataacesslayer.DataSourceManager;
 import transit.management.dataacesslayer.dao.VehicleDAO;
 import transit.management.transferobjects.Vehicle;
@@ -25,8 +26,8 @@ public class VehicleDAOImpl implements VehicleDAO {
         String sql = "INSERT INTO vehicle (" +
                 "vehicle_type, fuel_type, fuel_consumption_rate, max_passengers, " +
                 "current_assigned_route_id, real_total_miles, real_total_consumption, " +
-                "maintain_gap_miles, miles_from_last_maintenance, need_maintenance" +
-                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "maintain_gap_miles, miles_from_last_maintenance " +
+                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -47,7 +48,6 @@ public class VehicleDAOImpl implements VehicleDAO {
             stmt.setBigDecimal(7, vehicle.getRealTotalConsumption());
             stmt.setBigDecimal(8, vehicle.getMaintainGapMiles());
             stmt.setBigDecimal(9, vehicle.getMilesFromLastMaintenance());
-            stmt.setBoolean(10, vehicle.isNeedMaintenance());
 
             return stmt.executeUpdate();
         }
@@ -74,7 +74,7 @@ public class VehicleDAOImpl implements VehicleDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new Vehicle.Builder()
+                    Vehicle vehicle = new Vehicle.Builder()
                             .id(rs.getInt("id"))
                             .vehicleType(rs.getString("vehicle_type"))
                             .fuelType(rs.getString("fuel_type"))
@@ -85,8 +85,11 @@ public class VehicleDAOImpl implements VehicleDAO {
                             .realTotalConsumption(rs.getBigDecimal("real_total_consumption"))
                             .maintainGapMiles(rs.getBigDecimal("maintain_gap_miles"))
                             .milesFromLastMaintenance(rs.getBigDecimal("miles_from_last_maintenance"))
-                            .needMaintenance(rs.getBoolean("need_maintenance"))
                             .build();
+                    MaintenanceService service = new MaintenanceService();
+                    vehicle.addObserver(service);
+                    vehicle.setMilesFromLastMaintenance(rs.getBigDecimal("miles_from_last_maintenance"));
+                    return vehicle;
                 }
             }
         }
@@ -114,9 +117,10 @@ public class VehicleDAOImpl implements VehicleDAO {
                         .realTotalMiles(rs.getBigDecimal("real_total_miles"))
                         .realTotalConsumption(rs.getBigDecimal("real_total_consumption"))
                         .maintainGapMiles(rs.getBigDecimal("maintain_gap_miles"))
-                        .milesFromLastMaintenance(rs.getBigDecimal("miles_from_last_maintenance"))
-                        .needMaintenance(rs.getBoolean("need_maintenance"))
                         .build();
+                MaintenanceService service = new MaintenanceService();
+                vehicle.addObserver(service);
+                vehicle.setMilesFromLastMaintenance(rs.getBigDecimal("miles_from_last_maintenance"));
                 vehicles.add(vehicle);
             }
         }

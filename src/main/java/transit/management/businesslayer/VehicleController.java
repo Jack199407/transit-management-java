@@ -16,6 +16,7 @@ import transit.management.dataacesslayer.dao.impl.*;
 import transit.management.transferobjects.*;
 import transit.management.viewlayer.dto.AddOrUpdateDto;
 import transit.management.viewlayer.dto.FuelMonitorDto;
+import transit.management.viewlayer.dto.MaintenanceInfoDto;
 import utils.DateConvertUtil;
 
 import java.math.BigDecimal;
@@ -28,7 +29,7 @@ public class VehicleController {
 
     private static volatile VehicleController instance;
 
-    private Map<String, ConsumptionStrategy> rateMap;
+    private final Map<String, ConsumptionStrategy> rateMap;
 
     private VehicleController() {
         rateMap = new HashMap<>();
@@ -55,6 +56,7 @@ public class VehicleController {
     private final RouteStationDAO routeStationDAO = new RouteStationDAOImpl();
     private final StationDAO stationDAO = new StationDAOImpl();
     private final GpsTrackDAO gpsTrackDAO = new GpsTrackDAOImpl();
+    private final MaintainRecordDAO maintainRecordDAO = new MaintainRecordDAOImpl();
 
     public boolean validUserInfo(String userName, String password) {
         User user;
@@ -252,6 +254,7 @@ public class VehicleController {
                 diffConsumption = dto.getRealConsumption();
             }
             if (finish) {
+
                 int updateVehicle = vehicleDAO
                         .updateMilesAndConsumptionByVehicleId(dto.getVehicleId(), diffMiles, diffConsumption);
                 return updateVehicle >0;
@@ -282,6 +285,21 @@ public class VehicleController {
                     && (maxConsumption.compareTo(vehicle.getRealTotalConsumption()) >= 0);
             monitorDto.setNormal(normal);
             return monitorDto;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public MaintenanceInfoDto queryMainInfos(Integer vehicleId) {
+        MaintenanceInfoDto res;
+        try {
+            res = new MaintenanceInfoDto();
+            Vehicle vehicle = vehicleDAO.selectById(vehicleId);
+            res.setVehicleId(vehicleId);
+            res.setNeedMaintain(vehicle.isNeedMaintenance());
+            List<MaintainRecord> records = maintainRecordDAO.listByVehicleId(vehicleId);
+            res.setRecords(records);
+            return res;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

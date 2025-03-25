@@ -106,6 +106,15 @@
         <url-pattern>/energy/monitor</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ListMaintainServlet</servlet-name>
+        <servlet-class>transit.management.viewlayer.servlet.ListMaintainServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ListMaintainServlet</servlet-name>
+        <url-pattern>/list/maintain</url-pattern>
+    </servlet-mapping>
+
     <!-- CORS 跨域 Filter 配置 -->
     <filter>
         <filter-name>CorsFilter</filter-name>

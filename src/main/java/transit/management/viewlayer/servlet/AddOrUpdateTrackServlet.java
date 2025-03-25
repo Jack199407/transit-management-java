@@ -1,7 +1,6 @@
 package transit.management.viewlayer.servlet;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import transit.management.businesslayer.VehicleController;
 import transit.management.businesslayer.dto.ScheduleTracksDto;
 import transit.management.viewlayer.dto.AddOrUpdateDto;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 public class AddOrUpdateTrackServlet extends HttpServlet  {
