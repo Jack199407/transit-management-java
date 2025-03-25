@@ -1,5 +1,7 @@
 package transit.management.businesslayer.strategy;
 
+import java.math.BigDecimal;
+
 public interface ConsumptionStrategy {
-    double calculateConsumption(double miles);
+    BigDecimal calculateConsumption(BigDecimal miles);
 }

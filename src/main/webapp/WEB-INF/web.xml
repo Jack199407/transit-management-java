@@ -97,6 +97,14 @@
         <servlet-name>AddOrUpdateTrackServlet</servlet-name>
         <url-pattern>/add/track</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>QueryVehicleServlet</servlet-name>
+        <servlet-class>transit.management.viewlayer.servlet.QueryVehicleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>QueryVehicleServlet</servlet-name>
+        <url-pattern>/energy/monitor</url-pattern>
+    </servlet-mapping>
 
     <!-- CORS 跨域 Filter 配置 -->
     <filter>

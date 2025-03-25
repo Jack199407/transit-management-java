@@ -64,7 +64,33 @@ public class VehicleDAOImpl implements VehicleDAO {
     }
 
     @Override
-    public Vehicle selectById(int id) {
+    public Vehicle selectById(int id) throws SQLException {
+        String sql = "SELECT * FROM vehicle WHERE id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Vehicle.Builder()
+                            .id(rs.getInt("id"))
+                            .vehicleType(rs.getString("vehicle_type"))
+                            .fuelType(rs.getString("fuel_type"))
+                            .fuelConsumptionRate(rs.getBigDecimal("fuel_consumption_rate"))
+                            .maxPassengers(rs.getInt("max_passengers"))
+                            .currentAssignedRouteId((Integer) rs.getObject("current_assigned_route_id"))
+                            .realTotalMiles(rs.getBigDecimal("real_total_miles"))
+                            .realTotalConsumption(rs.getBigDecimal("real_total_consumption"))
+                            .maintainGapMiles(rs.getBigDecimal("maintain_gap_miles"))
+                            .milesFromLastMaintenance(rs.getBigDecimal("miles_from_last_maintenance"))
+                            .needMaintenance(rs.getBoolean("need_maintenance"))
+                            .build();
+                }
+            }
+        }
+
         return null;
     }
 

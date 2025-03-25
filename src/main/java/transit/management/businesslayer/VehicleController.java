@@ -7,10 +7,15 @@ import transit.management.businesslayer.command.VehicleManager;
 import transit.management.businesslayer.dto.ScheduleTracksDto;
 import transit.management.businesslayer.dto.VehiclesAndRoutesDto;
 import transit.management.businesslayer.factory.VehicleFactory;
+import transit.management.businesslayer.strategy.ConsumptionStrategy;
+import transit.management.businesslayer.strategy.impl.BusConsumptionStrategy;
+import transit.management.businesslayer.strategy.impl.DieselElectricTrainConsumptionStrategy;
+import transit.management.businesslayer.strategy.impl.ElectricLightRailConsumptionStrategy;
 import transit.management.dataacesslayer.dao.*;
 import transit.management.dataacesslayer.dao.impl.*;
 import transit.management.transferobjects.*;
 import transit.management.viewlayer.dto.AddOrUpdateDto;
+import transit.management.viewlayer.dto.FuelMonitorDto;
 import utils.DateConvertUtil;
 
 import java.math.BigDecimal;
@@ -23,7 +28,14 @@ public class VehicleController {
 
     private static volatile VehicleController instance;
 
-    private VehicleController() {}
+    private Map<String, ConsumptionStrategy> rateMap;
+
+    private VehicleController() {
+        rateMap = new HashMap<>();
+        rateMap.put("Bus", new BusConsumptionStrategy());
+        rateMap.put("Electric Light Rail", new ElectricLightRailConsumptionStrategy());
+        rateMap.put("Diesel Electric Train", new DieselElectricTrainConsumptionStrategy());
+    }
 
     public static VehicleController getInstance() {
         if (instance == null) {
@@ -248,5 +260,30 @@ public class VehicleController {
             throw new RuntimeException(e);
         }
         return false;
+    }
+
+    public FuelMonitorDto listFuelMonitor(Integer vehicleId) {
+        FuelMonitorDto monitorDto;
+        try {
+            Vehicle vehicle = vehicleDAO.selectById(vehicleId);
+            monitorDto = new FuelMonitorDto();
+            monitorDto.setVehicleId(vehicleId);
+            monitorDto.setFuelType(vehicle.getFuelType());
+            monitorDto.setRealTotalMiles(vehicle.getRealTotalMiles());
+            monitorDto.setRealTotalConsumption(vehicle.getRealTotalConsumption());
+            monitorDto.setFuelConsumptionRate(vehicle.getFuelConsumptionRate());
+            ConsumptionStrategy strategy = rateMap.get(vehicle.getVehicleType());
+            BigDecimal standardConsumption = strategy.calculateConsumption(vehicle.getRealTotalMiles());
+            BigDecimal minConsumption = standardConsumption.multiply(new BigDecimal("0.8"));
+            monitorDto.setMinConsumption(minConsumption);
+            BigDecimal maxConsumption = standardConsumption.multiply(new BigDecimal("1.2"));
+            monitorDto.setMaxConsumption(maxConsumption);
+            boolean normal = (minConsumption.compareTo(vehicle.getRealTotalConsumption()) <= 0)
+                    && (maxConsumption.compareTo(vehicle.getRealTotalConsumption()) >= 0);
+            monitorDto.setNormal(normal);
+            return monitorDto;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
