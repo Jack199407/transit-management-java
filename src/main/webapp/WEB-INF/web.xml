@@ -81,6 +81,14 @@
         <servlet-name>AddScheduleServlet</servlet-name>
         <url-pattern>/add/schedule</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>ListTrackServlet</servlet-name>
+        <servlet-class>transit.management.viewlayer.servlet.ListTrackServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ListTrackServlet</servlet-name>
+        <url-pattern>/list/track</url-pattern>
+    </servlet-mapping>
 
     <!-- CORS 跨域 Filter 配置 -->
     <filter>

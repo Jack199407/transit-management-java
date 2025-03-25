@@ -10,7 +10,7 @@ public interface BaseDAO<T> {
 
     int update(T entity);
 
-    T selectById(int id);
+    T selectById(int id) throws SQLException;
 
-    List<T> selectAll();
+    List<T> selectAll() throws SQLException;
 }

@@ -1,4 +1,6 @@
 package transit.management.dataacesslayer.dao;
 
-public interface MaintainRecordDAO extends BaseDAO<MaintainRecordDAO>{
+import transit.management.transferobjects.MaintainRecord;
+
+public interface MaintainRecordDAO extends BaseDAO<MaintainRecord>{
 }

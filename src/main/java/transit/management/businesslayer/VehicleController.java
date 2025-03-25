@@ -4,27 +4,17 @@ import transit.management.businesslayer.command.AssignRouteCommand;
 import transit.management.businesslayer.command.Command;
 import transit.management.businesslayer.command.Dispatcher;
 import transit.management.businesslayer.command.VehicleManager;
+import transit.management.businesslayer.dto.ScheduleTracksDto;
 import transit.management.businesslayer.dto.VehiclesAndRoutesDto;
 import transit.management.businesslayer.factory.VehicleFactory;
-import transit.management.dataacesslayer.dao.DepartureScheduleDAO;
-import transit.management.dataacesslayer.dao.RouteDAO;
-import transit.management.dataacesslayer.dao.UserDAO;
-import transit.management.dataacesslayer.dao.VehicleDAO;
-import transit.management.dataacesslayer.dao.impl.DepartureScheduleDAPImpl;
-import transit.management.dataacesslayer.dao.impl.RouteDAOImpl;
-import transit.management.dataacesslayer.dao.impl.UserDAOImpl;
-import transit.management.dataacesslayer.dao.impl.VehicleDAOImpl;
-import transit.management.transferobjects.DepartureSchedule;
-import transit.management.transferobjects.Route;
-import transit.management.transferobjects.User;
-import transit.management.transferobjects.Vehicle;
+import transit.management.dataacesslayer.dao.*;
+import transit.management.dataacesslayer.dao.impl.*;
+import transit.management.transferobjects.*;
 import utils.DateConvertUtil;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -49,6 +39,9 @@ public class VehicleController {
     private final VehicleDAO vehicleDAO = new VehicleDAOImpl();
     private final DepartureScheduleDAO departureScheduleDAO = new DepartureScheduleDAPImpl();
     private final RouteDAO routeDAO = new RouteDAOImpl();
+    private final RouteStationDAO routeStationDAO = new RouteStationDAOImpl();
+    private final StationDAO stationDAO = new StationDAOImpl();
+    private final GpsTrackDAO gpsTrackDAO = new GpsTrackDAOImpl();
 
     public boolean validUserInfo(String userName, String password) {
         User user;
@@ -86,8 +79,8 @@ public class VehicleController {
         List<Vehicle> list;
         List<Route> routes;
         try {
-            list = vehicleDAO.listAll();
-            routes = routeDAO.listAll();
+            list = vehicleDAO.selectAll();
+            routes = routeDAO.selectAll();
             Map<Integer, Route> routeMap = routes.stream()
                     .collect(Collectors.toMap(Route::getId, Function.identity(), (v1, v2) -> v1));
             for (Vehicle vehicle : list) {
@@ -160,5 +153,55 @@ public class VehicleController {
             throw new RuntimeException(e);
         }
         return insert > 0;
+    }
+
+    public List<ScheduleTracksDto> listTracksByVehicleIdAndScheduleId(DepartureSchedule schedule) {
+        List<ScheduleTracksDto> res;
+        Integer vehicleId = schedule.getVehicleId();
+        Integer routeId = schedule.getRouteId();
+        try {
+            // list all stations on this route
+            Route route = routeDAO.selectById(routeId);
+            List<RouteStation> rs = routeStationDAO.selectByRouteId(routeId);
+            List<Integer> stationIds = rs.stream().map(RouteStation::getStationId).collect(Collectors.toList());
+            List<Station> stations = stationDAO.listByIds(stationIds);
+            Map<Integer, String> stationMap = stations.stream()
+                    .collect(Collectors.toMap(
+                            Station::getId,
+                            Station::getStationName,
+                            (v1, v2) -> v1
+                    ));
+            // list all stations have arrived
+            List<GpsTrack> gps = gpsTrackDAO.listByScheduleId(schedule.getId());
+            Map<Integer, GpsTrack> gpsMap = gps.stream().collect(Collectors.toMap(
+                            GpsTrack::getStationId,
+                            Function.identity(),
+                            (v1, v2) -> v1
+                    ));
+            // combine data together
+            res = rs.stream().map(s -> {
+                        ScheduleTracksDto dto = new ScheduleTracksDto();
+                        dto.setScheduleId(schedule.getId());
+                        dto.setVehicleId(vehicleId);
+                        dto.setRouteId(routeId);
+                        dto.setRouteName(route.getRouteName());
+                        dto.setStationId(s.getStationId());
+                        dto.setStationName(stationMap.get(s.getStationId()));
+                        dto.setStationOrder(s.getStationOrder());
+                        // check if this station has arrived
+                        GpsTrack track = gpsMap.getOrDefault(s.getStationId(), null);
+                        boolean arrived = Objects.nonNull(track);
+                        dto.setDepartTime(arrived ? track.getDepartTime() : null);
+                        dto.setArrivalTime(arrived ? track.getArrivalTime() : null);
+                        dto.setRealMiles(arrived ? track.getRealMiles() : new BigDecimal(0));
+                        dto.setRealConsumption(arrived ? track.getRealConsumption() : new BigDecimal(0));
+                        dto.setDone(arrived);
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return res;
     }
 }

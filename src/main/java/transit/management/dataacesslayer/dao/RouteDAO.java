@@ -5,6 +5,6 @@ import transit.management.transferobjects.Route;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface RouteDAO extends BaseDAO<RouteDAO>{
-    List<Route> listAll() throws SQLException;
+public interface RouteDAO extends BaseDAO<Route>{
+
 }

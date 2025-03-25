@@ -68,12 +68,7 @@ public class VehicleDAOImpl implements VehicleDAO {
     }
 
     @Override
-    public List<Vehicle> selectAll() {
-        return null;
-    }
-
-    @Override
-    public List<Vehicle> listAll() throws SQLException {
+    public List<Vehicle> selectAll() throws SQLException {
         List<Vehicle> vehicles = new ArrayList<>();
         String sql = "SELECT * FROM vehicle";
 

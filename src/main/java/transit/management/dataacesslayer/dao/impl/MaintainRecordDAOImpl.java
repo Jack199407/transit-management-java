@@ -1,12 +1,13 @@
 package transit.management.dataacesslayer.dao.impl;
 
 import transit.management.dataacesslayer.dao.MaintainRecordDAO;
+import transit.management.transferobjects.MaintainRecord;
 
 import java.util.List;
 
 public class MaintainRecordDAOImpl implements MaintainRecordDAO {
     @Override
-    public int insert(MaintainRecordDAO entity) {
+    public int insert(MaintainRecord entity) {
         return 0;
     }
 
@@ -16,17 +17,17 @@ public class MaintainRecordDAOImpl implements MaintainRecordDAO {
     }
 
     @Override
-    public int update(MaintainRecordDAO entity) {
+    public int update(MaintainRecord entity) {
         return 0;
     }
 
     @Override
-    public MaintainRecordDAO selectById(int id) {
+    public MaintainRecord selectById(int id) {
         return null;
     }
 
     @Override
-    public List<MaintainRecordDAO> selectAll() {
+    public List<MaintainRecord> selectAll() {
         return null;
     }
 }

@@ -18,7 +18,7 @@ public class RouteDAOImpl implements RouteDAO {
         this.dataSource = DataSourceManager.getInstance();
     }
     @Override
-    public int insert(RouteDAO entity) {
+    public int insert(Route entity) {
         return 0;
     }
 
@@ -28,22 +28,34 @@ public class RouteDAOImpl implements RouteDAO {
     }
 
     @Override
-    public int update(RouteDAO entity) {
+    public int update(Route entity) {
         return 0;
     }
 
     @Override
-    public RouteDAO selectById(int id) {
-        return null;
+    public Route selectById(int id) throws SQLException {
+        String sql = "SELECT * FROM route WHERE id = ?";
+        Route route = null;
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    route = new Route.Builder()
+                            .id(rs.getInt("id"))
+                            .routeName(rs.getString("route_name"))
+                            .expectedTotalMiles(rs.getBigDecimal("expected_total_miles"))
+                            .build();
+                }
+            }
+        }
+        return route;
     }
 
     @Override
-    public List<RouteDAO> selectAll() {
-        return null;
-    }
-
-    @Override
-    public List<Route> listAll() throws SQLException {
+    public List<Route> selectAll() throws SQLException {
         List<Route> routes = new ArrayList<>();
         String sql = "SELECT * FROM route";
 
@@ -62,4 +74,5 @@ public class RouteDAOImpl implements RouteDAO {
         }
         return routes;
     }
+
 }
