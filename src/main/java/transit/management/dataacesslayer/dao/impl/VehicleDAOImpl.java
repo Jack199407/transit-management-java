@@ -4,6 +4,7 @@ import transit.management.dataacesslayer.DataSourceManager;
 import transit.management.dataacesslayer.dao.VehicleDAO;
 import transit.management.transferobjects.Vehicle;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -108,6 +109,27 @@ public class VehicleDAOImpl implements VehicleDAO {
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
+        }
+    }
+
+    @Override
+    public int updateMilesAndConsumptionByVehicleId
+            (Integer vehicleId, BigDecimal diffMiles, BigDecimal diffConsumption) throws SQLException {
+        String sql = "UPDATE vehicle SET " +
+                "real_total_miles = real_total_miles + ?, " +
+                "real_total_consumption = real_total_consumption + ?, " +
+                "miles_from_last_maintenance = miles_from_last_maintenance + ? " +
+                "WHERE id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setBigDecimal(1, diffMiles);
+            stmt.setBigDecimal(2, diffConsumption);
+            stmt.setBigDecimal(3, diffMiles);
+            stmt.setInt(4, vehicleId);
+
+            return stmt.executeUpdate();
         }
     }
 }

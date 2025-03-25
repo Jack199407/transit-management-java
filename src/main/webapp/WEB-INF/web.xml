@@ -89,6 +89,14 @@
         <servlet-name>ListTrackServlet</servlet-name>
         <url-pattern>/list/track</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>AddOrUpdateTrackServlet</servlet-name>
+        <servlet-class>transit.management.viewlayer.servlet.AddOrUpdateTrackServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddOrUpdateTrackServlet</servlet-name>
+        <url-pattern>/add/track</url-pattern>
+    </servlet-mapping>
 
     <!-- CORS 跨域 Filter 配置 -->
     <filter>

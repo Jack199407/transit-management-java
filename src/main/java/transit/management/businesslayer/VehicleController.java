@@ -10,6 +10,7 @@ import transit.management.businesslayer.factory.VehicleFactory;
 import transit.management.dataacesslayer.dao.*;
 import transit.management.dataacesslayer.dao.impl.*;
 import transit.management.transferobjects.*;
+import transit.management.viewlayer.dto.AddOrUpdateDto;
 import utils.DateConvertUtil;
 
 import java.math.BigDecimal;
@@ -203,5 +204,49 @@ public class VehicleController {
             throw new RuntimeException(e);
         }
         return res;
+    }
+
+    public boolean addOrUpdateTrack(AddOrUpdateDto dto) {
+        // query by scheduleId and stationId
+        boolean finish =false;
+        BigDecimal diffMiles = new BigDecimal(0);
+        BigDecimal diffConsumption = new BigDecimal(0);
+        try {
+            GpsTrack exist = gpsTrackDAO.queryByScheduleIdAndStationId(dto.getScheduleId(), dto.getStationId());
+            if (Objects.nonNull(exist)) {
+                // update
+                boolean arrivalEqual = Objects.equals(exist.getArrivalTime(), dto.getArrivalTime());
+                boolean departEqual = Objects.equals(exist.getDepartTime(), dto.getDepartTime());
+                boolean milesEqual = Objects.equals(exist.getRealMiles(), dto.getRealMiles());
+                boolean consumptionEqual = Objects.equals(exist.getRealConsumption(), dto.getRealConsumption());
+                if (arrivalEqual && departEqual && milesEqual && consumptionEqual) {
+                    // nothing changed, return true
+                    return true;
+                }
+                 finish = gpsTrackDAO.updateByScheduleIdAndStationId(dto.getScheduleId(), dto.getStationId(),
+                        dto.getDepartTime(), dto.getArrivalTime(), dto.getRealMiles(), dto.getRealConsumption());
+                diffMiles = dto.getRealMiles().subtract(exist.getRealMiles());
+                diffConsumption = dto.getRealConsumption().subtract(exist.getRealConsumption());
+            } else {
+                GpsTrack entity = new GpsTrack.Builder()
+                        .departureScheduleId(dto.getScheduleId())
+                        .stationId(dto.getStationId())
+                        .departTime(dto.getDepartTime())
+                        .arrivalTime(dto.getArrivalTime())
+                        .realMiles(dto.getRealMiles())
+                        .realConsumption(dto.getRealConsumption()).build();
+                finish = gpsTrackDAO.insert(entity) > 0;
+                diffMiles = dto.getRealMiles();
+                diffConsumption = dto.getRealConsumption();
+            }
+            if (finish) {
+                int updateVehicle = vehicleDAO
+                        .updateMilesAndConsumptionByVehicleId(dto.getVehicleId(), diffMiles, diffConsumption);
+                return updateVehicle >0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 }
