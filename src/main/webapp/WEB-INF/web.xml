@@ -115,6 +115,15 @@
         <url-pattern>/list/maintain</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>AddMaintainServlet</servlet-name>
+        <servlet-class>transit.management.viewlayer.servlet.AddMaintainServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddMaintainServlet</servlet-name>
+        <url-pattern>/add/maintain</url-pattern>
+    </servlet-mapping>
+
     <!-- CORS 跨域 Filter 配置 -->
     <filter>
         <filter-name>CorsFilter</filter-name>

@@ -34,7 +34,7 @@ public class AddScheduleServlet extends HttpServlet {
         boolean res = controller.addSchedule(vehicleId, routeId, expectedDepartTime, expectedArrivalTime);
         TransitResponse<String> resObj;
         if (res) {
-            resObj = new TransitResponse<>(true, "Success!");
+            resObj = new TransitResponse<>(true, null);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             resObj = new TransitResponse<>(false, "Username or password incorrect!");

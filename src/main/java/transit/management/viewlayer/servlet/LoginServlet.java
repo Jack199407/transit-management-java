@@ -3,10 +3,12 @@ package transit.management.viewlayer.servlet;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import transit.management.businesslayer.VehicleController;
+import transit.management.transferobjects.User;
 import transit.management.viewlayer.response.TransitResponse;
 import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Objects;
 
 public class LoginServlet extends HttpServlet {
 
@@ -24,11 +26,11 @@ public class LoginServlet extends HttpServlet {
         JsonObject jsonRequest = gson.fromJson(reader, JsonObject.class);
         String name = jsonRequest.get("name").getAsString();
         String password = jsonRequest.get("password").getAsString();
-        boolean valid = controller.validUserInfo(name, password);
+        User user = controller.validUserInfo(name, password);
 
-        TransitResponse<String> resObj;
-        if (valid) {
-            resObj = new TransitResponse<>(true, "Success!");
+        TransitResponse<User> resObj;
+        if (Objects.nonNull(user)) {
+            resObj = new TransitResponse<>(true, user);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             resObj = new TransitResponse<>(false, "Username or password incorrect!");

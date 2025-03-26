@@ -31,7 +31,7 @@ public class SignUpServlet extends HttpServlet {
         String msg = controller.signUp(name, email, password, role);
         TransitResponse<String> resObj;
         if ("success".equals(msg)) {
-            resObj = new TransitResponse<>(true, "Success!");
+            resObj = new TransitResponse<>(true, null);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             resObj = new TransitResponse<>(false, msg);

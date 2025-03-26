@@ -58,14 +58,14 @@ public class VehicleController {
     private final GpsTrackDAO gpsTrackDAO = new GpsTrackDAOImpl();
     private final MaintainRecordDAO maintainRecordDAO = new MaintainRecordDAOImpl();
 
-    public boolean validUserInfo(String userName, String password) {
+    public User validUserInfo(String userName, String password) {
         User user;
         try {
             user = userDAO.selectByNameAndPassword(userName, password);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return user != null;
+        return user;
     }
 
     public String signUp(String name, String email, String password, byte role) {
@@ -303,5 +303,24 @@ public class VehicleController {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean addMaintenance(Integer vehicleId, String maintainTime) {
+        // step 1, add new data into maintain_record
+        MaintainRecord entity = new MaintainRecord.Builder()
+                .vehicleId(vehicleId)
+                .maintainTime(DateConvertUtil.StringToDate(maintainTime))
+                .build();
+        try {
+            int insert = maintainRecordDAO.insert(entity);
+            // step 2, update vehicle
+            if (insert > 0) {
+                int update = vehicleDAO.updateMilesFromLastMaintenanceById(vehicleId);
+                return update > 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 }

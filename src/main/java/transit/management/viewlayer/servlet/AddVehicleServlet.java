@@ -28,7 +28,7 @@ public class AddVehicleServlet extends HttpServlet {
         String type = jsonRequest.get("vehicleType").getAsString();
         controller.addVehicle(type);
         TransitResponse<String> resObj;
-        resObj = new TransitResponse<>(true, "Success!");
+        resObj = new TransitResponse<>(true, null);
         String jsonResponse = gson.toJson(resObj);
         response.getWriter().write(jsonResponse);
     }

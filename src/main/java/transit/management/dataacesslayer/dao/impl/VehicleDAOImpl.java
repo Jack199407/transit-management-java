@@ -162,4 +162,18 @@ public class VehicleDAOImpl implements VehicleDAO {
             return stmt.executeUpdate();
         }
     }
+
+    @Override
+    public int updateMilesFromLastMaintenanceById(Integer vehicleId) throws SQLException {
+        String sql = "UPDATE vehicle SET " +
+                "miles_from_last_maintenance = 0 " +
+                "WHERE id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, vehicleId);
+
+            return stmt.executeUpdate();
+        }
+    }
 }

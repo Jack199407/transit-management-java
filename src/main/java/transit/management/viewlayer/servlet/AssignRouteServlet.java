@@ -30,7 +30,7 @@ public class AssignRouteServlet extends HttpServlet {
         controller.AssignRoute(vehicleId, routeId);
         // 构造响应
         TransitResponse<String> resObj;
-        resObj = new TransitResponse<>(true, "Success!");
+        resObj = new TransitResponse<>(true, null);
         String jsonResponse = gson.toJson(resObj);
         response.getWriter().write(jsonResponse);
     }

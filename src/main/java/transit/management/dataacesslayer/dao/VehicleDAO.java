@@ -11,4 +11,6 @@ public interface VehicleDAO extends BaseDAO<Vehicle>{
 
     int updateMilesAndConsumptionByVehicleId
             (Integer vehicleId, BigDecimal diffMiles, BigDecimal diffConsumption) throws SQLException;
+
+    int updateMilesFromLastMaintenanceById(Integer vehicleId) throws SQLException;
 }

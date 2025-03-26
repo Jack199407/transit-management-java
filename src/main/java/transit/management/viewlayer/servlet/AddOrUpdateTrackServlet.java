@@ -28,7 +28,7 @@ public class AddOrUpdateTrackServlet extends HttpServlet  {
         boolean success = controller.addOrUpdateTrack(dto);
         TransitResponse<List<ScheduleTracksDto>> resObj;
         if (success) {
-            resObj = new TransitResponse<>(true, "Success!");
+            resObj = new TransitResponse<>(true, null);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             resObj = new TransitResponse<>(false, "update or insert error!");

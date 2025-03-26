@@ -31,7 +31,7 @@ public class UpdateStatusServlet extends HttpServlet {
         boolean success = controller.updateStatus(scheduleId, newStatus);
         TransitResponse<String> resObj;
         if (success) {
-            resObj = new TransitResponse<>(true, "Success!");
+            resObj = new TransitResponse<>(true, null);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             resObj = new TransitResponse<>(false, "Username or password incorrect!");

@@ -4,10 +4,7 @@ import transit.management.dataacesslayer.DataSourceManager;
 import transit.management.dataacesslayer.dao.MaintainRecordDAO;
 import transit.management.transferobjects.MaintainRecord;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +15,27 @@ public class MaintainRecordDAOImpl implements MaintainRecordDAO {
         this.dataSource = DataSourceManager.getInstance();
     }
     @Override
-    public int insert(MaintainRecord entity) {
-        return 0;
+    public int insert(MaintainRecord entity) throws SQLException {
+        String sql = "INSERT INTO maintain_record (vehicle_id, maintain_time) VALUES (?, ?)";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setInt(1, entity.getVehicleId());
+            stmt.setTimestamp(2, new Timestamp(entity.getMaintainTime().getTime()));
+
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                    }
+                }
+            }
+
+            return -1;
+        }
     }
 
     @Override
