@@ -99,6 +99,10 @@ public class VehicleController {
             Map<Integer, Route> routeMap = routes.stream()
                     .collect(Collectors.toMap(Route::getId, Function.identity(), (v1, v2) -> v1));
             for (Vehicle vehicle : list) {
+                Route route = routeMap.get(vehicle.getCurrentAssignedRouteId());
+                if (Objects.isNull(route)) {
+                    continue;
+                }
                 vehicle.setCurrentRouteName(routeMap.get(vehicle.getCurrentAssignedRouteId()).getRouteName());
             }
         } catch (SQLException e) {
