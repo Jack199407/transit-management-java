@@ -11,11 +11,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DepartureScheduleDAPImpl implements DepartureScheduleDAO {
+public class DepartureScheduleDAOImpl implements DepartureScheduleDAO {
 
     private final DataSourceManager dataSource;
 
-    public DepartureScheduleDAPImpl() {
+    public DepartureScheduleDAOImpl() {
         this.dataSource = DataSourceManager.getInstance();
     }
     @Override

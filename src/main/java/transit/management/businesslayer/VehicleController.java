@@ -51,7 +51,7 @@ public class VehicleController {
 
     private final UserDAO userDAO = new UserDAOImpl();
     private final VehicleDAO vehicleDAO = new VehicleDAOImpl();
-    private final DepartureScheduleDAO departureScheduleDAO = new DepartureScheduleDAPImpl();
+    private final DepartureScheduleDAO departureScheduleDAO = new DepartureScheduleDAOImpl();
     private final RouteDAO routeDAO = new RouteDAOImpl();
     private final RouteStationDAO routeStationDAO = new RouteStationDAOImpl();
     private final StationDAO stationDAO = new StationDAOImpl();
