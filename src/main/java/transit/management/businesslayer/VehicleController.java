@@ -15,6 +15,7 @@ import transit.management.dataacesslayer.dao.*;
 import transit.management.dataacesslayer.dao.impl.*;
 import transit.management.transferobjects.*;
 import transit.management.viewlayer.dto.AddOrUpdateDto;
+import transit.management.viewlayer.dto.AnalyticDto;
 import transit.management.viewlayer.dto.FuelMonitorDto;
 import transit.management.viewlayer.dto.MaintenanceInfoDto;
 import utils.DateConvertUtil;
@@ -326,5 +327,27 @@ public class VehicleController {
             throw new RuntimeException(e);
         }
         return false;
+    }
+
+    public AnalyticDto listAnalyticInfo(Integer vehicleId) {
+        AnalyticDto analyticDto = new AnalyticDto();
+        try {
+            Vehicle vehicle = vehicleDAO.selectById(vehicleId);
+            analyticDto.setRealTotalMiles(vehicle.getRealTotalMiles());
+            analyticDto.setRealTotalConsumption(vehicle.getRealTotalConsumption());
+            ConsumptionStrategy strategy = rateMap.get(vehicle.getVehicleType());
+            BigDecimal standardConsumption = strategy.calculateConsumption(vehicle.getRealTotalMiles());
+            BigDecimal minConsumption = standardConsumption.multiply(new BigDecimal("0.8"));
+            BigDecimal maxConsumption = standardConsumption.multiply(new BigDecimal("1.2"));
+            boolean normal = (minConsumption.compareTo(vehicle.getRealTotalConsumption()) <= 0)
+                    && (maxConsumption.compareTo(vehicle.getRealTotalConsumption()) >= 0);
+            analyticDto.setNormal(normal);
+            analyticDto.setNeedMaintain(vehicle.isNeedMaintenance());
+            List<MaintainRecord> records = maintainRecordDAO.listByVehicleId(vehicleId);
+            analyticDto.setMaintainCount(records.size());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return analyticDto;
     }
 }
